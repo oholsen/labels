@@ -8,6 +8,7 @@
             width: 210mm;
             height: 297mm;
             margin: 1mm 1mm; 
+            overflow: hidden;
         }
 
         .label {
@@ -59,13 +60,22 @@
             width: 100%;
         }
 
+        table.outer {
+            left: 10;
+        }
+
         table.inner tr td:first-child {
             /* font-size: 10px; */
             width: 4em;
         }
 
+        table.inner tr td {
+            overflow: hidden;
+            white-space: nowrap;
+        }
+
         td.nummercol {
-            width: 2em;
+            width: 3em;
             height: 2em;
             word-break: break-all;
             text-align: center;
@@ -74,7 +84,7 @@
         .nummer {
             font-size: 25px;
             font-weight: 700;
-            transform: rotate(90.0deg);
+            transform: translate(-0.5em, 0) rotate(90.0deg);
         }
 
     </style>
