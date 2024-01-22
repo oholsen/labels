@@ -48,18 +48,43 @@ def parse(filename: str):
     dataframe = pandas.read_csv(filename)
     records = dataframe.to_dict(orient="records")
     for r in records:
+        # print(r)
         # RaceSplitter start list, forventer følgende kolonner
         # Racer bib number,First name,Last name,Team,Skive
         # Add column Skive: =MOD(B1 - 1, 20) + 1
         # Export as: CSV (UTF-8 encoded)
-        nummer = str(r["Racer bib number"])
-        fornavn = r["First name"]
-        etternavn = r["Last name"]
+        # TODO: skive = (int(nummer) -1) % 20 + 1
+
+        if 0:
+            # Racesplitter headings
+            nummer = str(r["Racer bib number"])
+            fornavn = r["First name"]
+            etternavn = r["Last name"]
+            klubb = r["Team"]
+            skive = str(r["Skive"])
+        else:
+            nummer = str(r["Nummer"])
+            fornavn = r["Fornavn"]
+            etternavn = r["Etternavn"]
+            klubb = r["Klubb"]
+            skive = str(r["Skive"])
+
         assert isinstance(fornavn, str)
         assert isinstance(etternavn, str)
         navn = fornavn + " " + etternavn
-        klubb = r["Team"]
-        skive = str(r["Skive"])
+        print("NAME", len(navn), navn, repr(etternavn))
+
+        # TODO: drop first names if name is long...
+        maxlen = 25
+        while len(navn) > maxlen and fornavn:
+            fn = fornavn.split(" ")
+            fornavn = " ".join(fn[:-1])
+            if len(fn[-1]) > 1:
+                init = fn[-1][0]
+                fn[-1] = init
+                fornavn += " " + init
+            navn = fornavn + " " + etternavn
+            print("NAMECUT", len(navn), navn)
 
         #if len(klubb) > 18:
         #    klubb = klubb[:18] + "..."
@@ -99,7 +124,7 @@ def clubwise(records):
         # print(klubb, len(records), m)
         assert (len(records) + m) % 3 == 0
         for i in range(m):
-            yield {"KLUBB": klubb, "SKIVE": "", "NUMMER": "", "NAVN": ""}
+            yield {"KLUBB": klubb, "SKIVE": "...", "NUMMER": "...", "NAVN": "..."}
 
 
 def main():
@@ -109,12 +134,13 @@ def main():
 
     page = Page(race, 1)
 
-    # TODO: kutte lange navn og klubbnavn
+    # TODO: skrive ut ubrukte startnummer for etteranmeldinger
     # TODO: shuffle clubs to avoid cuts and minimize sheets
     # e.g. fill large clubs with small ones
+
     # for o in parse(filename):
     for o in clubwise(parse(filename)):
-            
+        
         if page.full():
             page.write()
             page = page.next()

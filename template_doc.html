@@ -44,16 +44,6 @@
             }
         }
 
-        /*
-        */
-        /*
-        td:last-child {
-            position: absolute;
-            top: 50%;
-            left: 50%;            
-        }
-        */
-
         table {
             position: relative;
             top: 10%;
@@ -64,16 +54,11 @@
             left: 10;
         }
 
-        table.inner tr td:first-child {
-            /* font-size: 10px; */
-            width: 4em;
+/*
+        table.inner {
+            border: 1px solid #000000;
         }
-
-        table.inner tr td {
-            overflow: hidden;
-            white-space: nowrap;
-        }
-
+*/
         td.nummercol {
             width: 3em;
             height: 2em;
@@ -81,10 +66,34 @@
             text-align: center;
         }
         
-        .nummer {
+        td.nummercol .nummer {
             font-size: 25px;
             font-weight: 700;
             transform: translate(-0.5em, 0) rotate(90.0deg);
+        }
+
+        table.inner .name {
+            font-style: italic;
+            padding-bottom: 1em;
+            max-width: 52mm;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: clip;
+        }
+
+        table.inner .klubb {
+            max-width: 146px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: clip;
+        }
+
+        table.inner .nummer {
+            font-weight: bold;
+        }
+
+        table.inner .skive {
+            font-weight: bold;
         }
 
     </style>
