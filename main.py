@@ -3,12 +3,6 @@ import pandas
 import sys
 import math
 
-# TODO: find labels that can tear/split
-# https://www.clasohlson.com/no/Selvheftende-etiketter/p/32-2618
-# 70x37mm
-
-# print settings:
-# A4 with none margins and without headers and footers
 
 template_doc = open("template_doc.html").read()
 template_label = open("template_label.html").read()
@@ -45,30 +39,31 @@ class Page:
 
 
 def parse(filename: str):
+    # Add column Skive: =MOD(B1 - 1, 20) + 1
+    # Export as: CSV (UTF-8 encoded)
+
     dataframe = pandas.read_csv(filename)
     records = dataframe.to_dict(orient="records")
     for r in records:
         # print(r)
-        # RaceSplitter start list, forventer følgende kolonner
-        # Racer bib number,First name,Last name,Team,Skive
-        # Add column Skive: =MOD(B1 - 1, 20) + 1
-        # Export as: CSV (UTF-8 encoded)
-        # TODO: skive = (int(nummer) -1) % 20 + 1
 
         if 0:
-            # Racesplitter headings
+            # RaceSplitter start list, må legge til Skive
             nummer = str(r["Racer bib number"])
             fornavn = r["First name"]
             etternavn = r["Last name"]
             klubb = r["Team"]
             skive = str(r["Skive"])
         else:
+            # Norske kolonner ala RecaSplitter
             nummer = str(r["Nummer"])
             fornavn = r["Fornavn"]
             etternavn = r["Etternavn"]
             klubb = r["Klubb"]
             skive = str(r["Skive"])
 
+        # TODO: skive = (int(nummer) -1) % 20 + 1
+    
         assert isinstance(fornavn, str)
         assert isinstance(etternavn, str)
         navn = fornavn + " " + etternavn
@@ -86,14 +81,10 @@ def parse(filename: str):
             navn = fornavn + " " + etternavn
             print("NAMECUT", len(navn), navn)
 
-        #if len(klubb) > 18:
-        #    klubb = klubb[:18] + "..."
-
         if not navn:
             print("SKIP", r)
             continue
 
-        # dataclass?
         yield {
             "NUMMER": nummer,
             "KLUBB": klubb,
@@ -114,14 +105,16 @@ def clubwise(records):
         for klubb, records in klubber.items():
             print(klubb, len(records))
         return
+    
     for klubb, records in klubber.items():
         n = len(records)
         for r in records:
             yield r
+
+        # fyll opp raden:
         m = 3 - (n % 3)
         if m == 3:
             m = 0
-        # print(klubb, len(records), m)
         assert (len(records) + m) % 3 == 0
         for i in range(m):
             yield {"KLUBB": klubb, "SKIVE": "...", "NUMMER": "...", "NAVN": "..."}
@@ -134,11 +127,15 @@ def main():
 
     page = Page(race, 1)
 
-    # TODO: skrive ut ubrukte startnummer for etteranmeldinger
+    # TODO: skrive ut ubrukte startnummer for etteranmeldinger?
+    # TODO: don't use end of nearly full sheets
     # TODO: shuffle clubs to avoid cuts and minimize sheets
     # e.g. fill large clubs with small ones
 
+    # i rekkefølge av startnummer:
     # for o in parse(filename):
+
+    # Samling av lapper fra samme klubb:
     for o in clubwise(parse(filename)):
         
         if page.full():
